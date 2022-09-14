@@ -1,5 +1,5 @@
 PERK.PrintName = "Kinton"
-PERK.Description = "{2} speed boost. \n{3} chance to spawn a Flare upon killing non-elites."
+PERK.Description = "{2} speed boost. \n+{2} crit chance. \n{3} chance to spawn a Flare on kill."
 PERK.Icon = "materials/perks/specops/flare.png"
 PERK.Params = {
     [1] = {value = 1, percent = true},
@@ -23,10 +23,15 @@ PERK.Hooks.Horde_PlayerMoveBonus = function(ply, bonus)
     bonus.sprintspd = bonus.sprintspd * 1.25
 end
 
+PERK.Hooks.Horde_OnPlayerCriticalCheck = function (ply, npc, bonus, hitgroup, dmginfo, crit_bonus)
+    if ply:Horde_GetPerk("shinobi_1_2") then
+        crit_bonus.add = crit_bonus.add + 0.25
+    end
+end
+
 PERK.Hooks.Horde_OnNPCKilled = function(victim, killer, inflictor)
     if not killer:Horde_GetPerk("shinobi_1_2") then return end
     if inflictor:IsNPC() then return end -- Prevent infinite chains
-	if victim:GetVar("is_elite") then return end
     local p = math.random()
     if p <= 0.5 then
         local ent = ents.Create("projectile_horde_flare")

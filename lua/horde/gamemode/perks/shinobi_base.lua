@@ -1,19 +1,20 @@
 PERK.PrintName = "Shinobi Base"
 PERK.Description =
 [[
-Shinobi is a subclass of Berserker that focuses on dodge and high damage output with critical hits, but its health passively drains.
-Best used as a glass cannon.
+Shinobi is a subclass of Berserker that focuses on dodge and high damage output with critical hits,
+dealing 50% extra damage upon triggering. However, you take {3} more damage.
 COMPLEXITY: HIGH
     
 Press Shift + E to release a Smoke Bomb at your feet that gives you and nearby teammates {3} evasion. {9} second cooldown.
 
-
+{3} increase in damage taken.
 {5} increased Global damage resistance. ({4} base, {6} per level, up to {7}).
 {1} increased Evasion. ({3} base, {6} per level, up to {2}).
-{8} increased critical chance. ({7} base, {6} per level, up to {3}).
-Passively drains 2 health per second, up to {8} of your health. ({7} base, {6} per level, up to {3}
+{8} critical chance. ({7} base, {6} per level, up to {3}).
+{5} increased critical damage. ({4} base, {6} per level, up to {7}).
 ]]
-PERK.Icon = "materials/subclasses/employee.png"
+--Passively drains 2 health per second, up to {8} of your health. ({7} base, {6} per level, up to {3}
+PERK.Icon = "materials/subclasses/shinobi.png"
 PERK.Params = {
     [1] = {percent = true, base = 0.5, level = 0.01, max = 0.75, classname = "Shinobi"},
 	[2] = {value = 0.75, percent = true},
@@ -24,6 +25,8 @@ PERK.Params = {
     [7] = {value = 0.25, percent = true},
 	[8] = {percent = true, base = 0.25, level = 0.01, max = 0.5, classname = "Shinobi"},
 	[9] = {value = 8},
+	[10] = {value = 1, percent = true},
+	[11] = {percent = true, base = 0.5, level = -0.01, max = 0.25, classname = "Shinobi"},
 }
 --Immune to poison damage and debuffs that directly lower health. Includes Break, Bleeding, and Necrosis.
 --{5} increased Global damage resistance. ({4} base, {6} per level, up to {7}).
@@ -41,9 +44,17 @@ PERK.Hooks.Horde_OnPlayerDamageTaken = function(ply, dmginfo, bonus)
 	bonus.evasion = bonus.evasion + (0.5 + ply:Horde_GetPerkLevelBonus("shinobi_base"))
 end
 
+hook.Add("EntityTakeDamage", "ShinobiTakeDamage", function (target, dmg)
+    if not target:IsValid() then return end
+    if target:IsPlayer() and target:Horde_GetPerk("shinobi_base") then
+	dmg:ScaleDamage(1.5)
+       end
+end)
+
+
 PERK.Hooks.Horde_OnPlayerDamage = function (ply, npc, bonus, hitgroup, dmginfo)
     if ply:Horde_GetPerk("shinobi_base") then
-        local crit_rate = (0.25 + ply:Horde_GetPerkLevelBonus("shinobi"))
+        local crit_rate = (0.25 + ply:Horde_GetPerkLevelBonus("shinobi_base"))
         local crit_bonus = { increase = 0, more = 1, add = 0 }
         hook.Run("Horde_OnPlayerCriticalCheck", ply, npc, bonus, hitgroup, dmginfo, crit_bonus)
         crit_rate = (crit_rate + crit_bonus.add) * (1 + crit_bonus.increase) * crit_bonus.more
@@ -53,6 +64,12 @@ PERK.Hooks.Horde_OnPlayerDamage = function (ply, npc, bonus, hitgroup, dmginfo)
             hook.Run("Horde_OnPlayerCritical", ply, npc, bonus, hitgroup, dmginfo)
             sound.Play("horde/player/crit.ogg", ply:GetPos())
         end
+    end
+end
+
+PERK.Hooks.Horde_OnPlayerCritical = function (ply, npc, bonus, hitgroup, dmginfo, crit_bonus)
+    if ply:Horde_GetPerk("shinobi_base") then
+        bonus.increase = bonus.increase + ply:Horde_GetPerkLevelBonus("shinobi_base")
     end
 end
 
@@ -67,23 +84,6 @@ local id = ply:SteamID()
             ply:Horde_SetPerkCooldown(8)
         end
 		
-		timer.Create("Horde_Shinobi_Drain" .. id, 1, 0, function ()
-        if not ply:IsValid() then timer.Remove("Horde_Shinobi_Drain" .. id) return end
-        local half = ply:GetMaxHealth() * (0.25 + s)
-		if ply:Horde_GetPerk("shinobi_4_2") and ply:Health() >= 1 then
-		ply:SetMaxHealth(1)
-		ply:SetHealth(1)
-		end
-		if ply:Health() <= 1 and ply:Horde_GetPerk("shinobi_4_2") then return end
-        if ply:Health() > half then
-            ply:SetHealth(ply:Health() - 2)
-        elseif ply:Health() < half and ply:Horde_GetPerk("shinobi_3_1") then
-            ply:SetHealth(ply:Health() + 5)
-		 end
-		 end)
-	--	ply:SetMaxHealth(50 + (s * 10))
-    --    ply:SetHealth(ply:GetMaxHealth())
-
         net.Start("Horde_SyncActivePerk")
             net.WriteUInt(HORDE.Status_Smokescreen, 8)
             net.WriteUInt(1, 3)
@@ -96,8 +96,6 @@ end
 PERK.Hooks.Horde_OnUnsetPerk = function(ply, perk)
     if SERVER and perk == "shinobi_base" then
 	
-	local id = ply:SteamID()
-    timer.Remove("Horde_Shinobi_Drain" .. id)
 		
         net.Start("Horde_SyncActivePerk")
             net.WriteUInt(HORDE.Status_Smokescreen, 8)

@@ -12,14 +12,13 @@ PERK.Hooks = {}
 
 PERK.Hooks.Horde_OnSetPerk = function(ply, perk)
     if SERVER and perk == "shinobi_3_1" then
-        ply:Horde_SetHealthRegenEnabled(true)
         ply:Horde_SetHealthRegenPercentage(0.02)
     end
 end
 
 PERK.Hooks.Horde_OnUnsetPerk = function(ply, perk)
     if SERVER and perk == "shinobi_3_1" then
-        ply:Horde_SetHealthRegenEnabled(nil)
+        ply:Horde_SetHealthRegenPercentage(0)
     end
 end
 
@@ -66,13 +65,3 @@ PERK.Hooks.Horde_OnPlayerCriticalCheck = function (ply, npc, bonus, hitgroup, dm
     end
 end
 
-PERK.Hooks.PlayerTick = function (ply, mv)
-	if not ply:Horde_GetPerk("shinobi_3_1") then return end
-	
-	if ply:Horde_GetPerk("shinobi_4_2") then
-	ply:Horde_SetHealthRegenEnabled(nil)
-		else
-		ply:Horde_SetHealthRegenEnabled(true)
-        ply:Horde_SetHealthRegenPercentage(0.02)
-	end
-end

@@ -8,12 +8,12 @@ PERK.Params = {
 
 PERK.Hooks = {}
 
-PERK.Hooks.Horde_PlayerMoveBonus = function(ply, bonus)
-   if not ply:Horde_GetPerk("shinobi_3_2") then return end
+PERK.Hooks.Horde_PlayerMoveBonus = function(ply, bonus_walk, bonus_run)
+    if not ply:Horde_GetPerk("shinobi_3_2") then return end
 	if ply:Horde_GetSmokescreen() == 1 then
-    bonus.walkspd = bonus.walkspd * 1.25
-    bonus.sprintspd = bonus.sprintspd * 1.25
-end
+    bonus_walk.increase = bonus_walk.increase + 0.25
+    bonus_run.increase = bonus_run.increase + 0.25
+	end
 end
 
 PERK.Hooks.Horde_OnPlayerCriticalCheck = function (ply, npc, bonus, hitgroup, dmginfo, crit_bonus)

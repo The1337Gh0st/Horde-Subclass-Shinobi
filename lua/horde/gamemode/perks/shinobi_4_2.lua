@@ -1,6 +1,6 @@
 PERK.PrintName = "Weakest Enemy"
 PERK.Description = "Damage that exceeds your current health is converted into Necrosis. \nNecrosis gain from excess damage is capped at {1}. \nCrits deal {7} to {8} of an enemy's health as bonus damage."
-PERK.Icon = "materials/perks/decapitate.png"
+PERK.Icon = "materials/perks/shinobi/weakest_enemy.png"
 PERK.Params = {
     [1] = {value = 0.75, percent = true},
     [2] = {value = 0.25, percent = true},

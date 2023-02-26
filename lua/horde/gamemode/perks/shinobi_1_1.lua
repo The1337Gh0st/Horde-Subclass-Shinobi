@@ -1,5 +1,5 @@
 PERK.PrintName = "Chiburui"
-PERK.Description = "Gain {1} damage boost if at full health. \n{1} increased crit damage."
+PERK.Description = "Gain {1} melee damage boost if at full health. \n{1} increased crit damage."
 PERK.Icon = "materials/perks/samurai/blade_dance.png"
 PERK.Params = {
     [1] = {value = 0.25, percent = true},

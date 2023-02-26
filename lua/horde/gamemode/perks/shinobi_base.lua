@@ -2,29 +2,27 @@ PERK.PrintName = "Shinobi Base"
 PERK.Description =
 [[
 Shinobi is a subclass of Berserker that focuses on dodge and high damage output with critical hits,
-dealing 50% extra damage upon triggering. However, you take {3} more damage.
+dealing {4} extra damage upon triggering. However, you receive {3} more damage.
 COMPLEXITY: HIGH
     
-Press Shift + E to release a Smoke Bomb at your feet that gives you and nearby teammates {3} evasion. {9} second cooldown.
+Press Shift + E to release a Smoke Bomb at your feet that gives you and nearby teammates {4} evasion. {9} second cooldown.
 
 {3} increase in damage taken.
-{5} increased Global damage resistance. ({4} base, {6} per level, up to {7}).
-{1} increased Evasion. ({3} base, {6} per level, up to {2}).
-{8} critical chance. ({7} base, {6} per level, up to {3}).
-{5} increased critical damage. ({4} base, {6} per level, up to {7}).
+{1} increased Evasion. ({4} base, {6} per level, up to {2}).
+{8} critical chance. ({7} base, {6} per level, up to {4}).
 ]]
 --Passively drains 2 health per second, up to {8} of your health. ({7} base, {6} per level, up to {3}
 PERK.Icon = "materials/subclasses/shinobi.png"
 PERK.Params = {
     [1] = {percent = true, base = 0.5, level = 0.01, max = 0.75, classname = "Shinobi"},
 	[2] = {value = 0.75, percent = true},
-	[3] = {value = 0.5, percent = true},
-	[4] = {value = 0, percent = true},
+	[3] = {value = 1, percent = true},
+	[4] = {value = 0.5, percent = true},
     [5] = {percent = true, base = 0, level = 0.01, max = 0.25, classname = "Shinobi"},
     [6] = {value = 0.01, percent = true},
     [7] = {value = 0.25, percent = true},
 	[8] = {percent = true, base = 0.25, level = 0.01, max = 0.5, classname = "Shinobi"},
-	[9] = {value = 8},
+	[9] = {value = 10},
 	[10] = {value = 1, percent = true},
 	[11] = {percent = true, base = 0.5, level = -0.01, max = 0.25, classname = "Shinobi"},
 }
@@ -40,14 +38,13 @@ end
 
 PERK.Hooks.Horde_OnPlayerDamageTaken = function(ply, dmginfo, bonus)
     if not ply:Horde_GetPerk("shinobi_base")  then return end
-    bonus.resistance = bonus.resistance + ply:Horde_GetPerkLevelBonus("shinobi_base")
 	bonus.evasion = bonus.evasion + (0.5 + ply:Horde_GetPerkLevelBonus("shinobi_base"))
 end
 
 hook.Add("EntityTakeDamage", "ShinobiTakeDamage", function (target, dmg)
     if not target:IsValid() then return end
-    if target:IsPlayer() and target:Horde_GetPerk("shinobi_base") then
-	dmg:ScaleDamage(1.5)
+    if target:IsPlayer() and target:Alive() and target:Horde_GetPerk("shinobi_base") then
+	dmg:ScaleDamage(2)
        end
 end)
 
@@ -67,21 +64,15 @@ PERK.Hooks.Horde_OnPlayerDamage = function (ply, npc, bonus, hitgroup, dmginfo)
     end
 end
 
-PERK.Hooks.Horde_OnPlayerCritical = function (ply, npc, bonus, hitgroup, dmginfo, crit_bonus)
-    if ply:Horde_GetPerk("shinobi_base") then
-        bonus.increase = bonus.increase + ply:Horde_GetPerkLevelBonus("shinobi_base")
-    end
-end
-
 
 PERK.Hooks.Horde_OnSetPerk = function(ply, perk)
 local s = ply:Horde_GetLevel("Shinobi")
 local id = ply:SteamID()
     if SERVER and perk == "shinobi_base" then
         if ply:Horde_GetPerk("shinobi_2_2") then
-           ply:Horde_SetPerkCooldown(6)
+           ply:Horde_SetPerkCooldown(8)
         else
-            ply:Horde_SetPerkCooldown(8)
+            ply:Horde_SetPerkCooldown(10)
         end
 		
         net.Start("Horde_SyncActivePerk")

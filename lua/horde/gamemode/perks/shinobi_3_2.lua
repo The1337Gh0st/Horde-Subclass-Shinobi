@@ -1,30 +1,22 @@
 PERK.PrintName = "Koppojutsu"
-PERK.Description = "{1} speed boost while Smoke Bomb is active. Gain {1} crit chance against elites. \nLeech {2} health upon dealing a crit. \nGain immunity to Bleeding."
+PERK.Description = "Gain {1} crit chance. \nLeech {2} health upon dealing a crit. \nGain immunity to Bleeding."
 PERK.Icon = "materials/perks/bushido.png"
 PERK.Params = {
-    [1] = {value = 0.25, percent = true},
-    [2] = {value = 6},
+    [1] = {value = 0.2, percent = true},
+    [2] = {value = 10},
 }
 
 PERK.Hooks = {}
 
-PERK.Hooks.Horde_PlayerMoveBonus = function(ply, bonus_walk, bonus_run)
-    if not ply:Horde_GetPerk("shinobi_3_2") then return end
-	if ply:Horde_GetSmokescreen() == 1 then
-    bonus_walk.increase = bonus_walk.increase + 0.25
-    bonus_run.increase = bonus_run.increase + 0.25
-	end
-end
-
 PERK.Hooks.Horde_OnPlayerCriticalCheck = function (ply, npc, bonus, hitgroup, dmginfo, crit_bonus)
-    if ply:Horde_GetPerk("shinobi_3_2") and npc:GetVar("is_elite") then
-        crit_bonus.add = crit_bonus.add + 0.25
+    if ply:Horde_GetPerk("shinobi_3_2") then
+        crit_bonus.add = crit_bonus.add + 0.2
     end
 end
 
 PERK.Hooks.Horde_OnPlayerCritical = function (ply, npc, bonus, hitgroup, dmginfo, crit_bonus)
     if ply:Horde_GetPerk("shinobi_3_2") then
-        HORDE:SelfHeal(ply, 6)
+        HORDE:SelfHeal(ply, 10)
     end
 end
 
